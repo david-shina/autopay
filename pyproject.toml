@@ -1,0 +1,96 @@
+[project]
+name = "auto-pay-ai"
+version = "0.2.0"
+description = "AI-powered bill automation platform for Nigerian users. Paystack integration, Telegram bot, LangGraph decision agent."
+requires-python = ">=3.12,<3.15"
+readme = "README.md"
+
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn[standard]==0.34.0",
+    "sqlmodel==0.0.22",
+    "sqlalchemy==2.0.36",
+    "psycopg2-binary==2.9.10",
+    "alembic==1.14.0",
+    "pydantic[email]==2.10.4",
+    "pydantic-settings==2.7.0",
+    "python-dotenv==1.0.1",
+    "httpx==0.28.1",
+    "python-telegram-bot==21.9",
+    "apscheduler==3.11.0",
+    "langgraph==0.2.60",
+    "langchain-core==0.3.40",
+    "langchain-openai==0.3.0",
+    "groq==0.13.1",
+    "instructor==1.7.2",
+    "pymupdf==1.25.1",
+    "pillow==11.0.0",
+    "python-dateutil==2.9.0.post0",
+    "bcrypt==4.2.1",
+    "python-jose[cryptography]==3.3.0",
+    "cryptography==44.0.0",
+    "itsdangerous==2.2.0",
+    "jinja2==3.1.5",
+    "aiofiles==24.1.0",
+    "python-multipart==0.0.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.0",
+    "pytest-cov==6.0.0",
+    "respx==0.22.0",
+    "factory-boy==3.3.1",
+    "ruff==0.8.4",
+    "mypy==1.14.0",
+    "types-python-dateutil==2.9.0.20241206",
+]
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["tests*", "migrations*", "scripts*"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "integration: integration tests requiring a running database",
+    "unit: pure unit tests with no external dependencies",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
+ignore = ["E501", "B008", "B904"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["N802", "N803"]
+"migrations/**" = ["E", "F"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+exclude = ["migrations/", "tests/"]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["*/tests/*", "*/migrations/*"]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true

@@ -1,0 +1,52 @@
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+.eggs
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+.tox/
+.nox/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+.env.test
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Project
+.data/
+*.log
+logs/
+*.pid
+*.sock
+
+# Docker
+docker-compose.override.yml
+pg_data/
+
+# Migrations output (keep versions/ tracked but ignore compiled)
+*.pyc
+
+
+app/core/config.py

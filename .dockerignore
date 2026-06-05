@@ -1,0 +1,48 @@
+# ─── VCS ────────────────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+
+# ─── Python ─────────────────────────────────────────────────────────
+__pycache__
+*.py[cod]
+*.egg-info
+.eggs
+.venv
+venv
+env
+.pytest_cache
+.mypy_cache
+.ruff_cache
+htmlcov
+.coverage
+.coverage.*
+coverage.xml
+
+# ─── Env / secrets ──────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.test
+*.pem
+*.key
+
+# ─── IDE ────────────────────────────────────────────────────────────
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# ─── Docs / project noise ───────────────────────────────────────────
+README.md
+Makefile
+LICENSE
+docs
+*.md
+
+# ─── Docker compose local overrides ─────────────────────────────────
+docker-compose.override.yml
+
+# ─── Build artefacts shipped in image (not needed in build context) ─
+tests
+migrations/versions/__pycache__

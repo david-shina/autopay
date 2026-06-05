@@ -1,0 +1,51 @@
+name: auto-pay-ai
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: autopay-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-David*2020*}
+      POSTGRES_DB: ${POSTGRES_DB:-autopay}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-autopay}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - autopay-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autopay-app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-David*2020*}@localhost:5432/${POSTGRES_DB:-autopay}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - ./app:/code/app
+      - ./tests:/code/tests
+    networks:
+      - autopay-net
+
+volumes:
+  pg_data:
+    driver: local
+
+networks:
+  autopay-net:
+    driver: bridge

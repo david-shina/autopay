@@ -1,0 +1,43 @@
+name: auto-pay-ai-test
+
+services:
+  db-test:
+    image: postgres:16-alpine
+    container_name: autopay-db-test
+    environment:
+      POSTGRES_USER: autopay_test
+      POSTGRES_PASSWORD: autopay_test
+      POSTGRES_DB: autopay_test
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autopay_test -d autopay_test"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    networks:
+      - autopay-test-net
+
+  app-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autopay-app-test
+    env_file: .env.test
+    environment:
+      DATABASE_URL: postgresql://autopay_test:autopay_test@db-test:5432/autopay_test
+      ENVIRONMENT: test
+      LOG_LEVEL: WARNING
+    depends_on:
+      db-test:
+        condition: service_healthy
+    command: ["pytest", "--cov=app", "--cov-report=term-missing"]
+    volumes:
+      - ./app:/code/app
+      - ./tests:/code/tests
+    networks:
+      - autopay-test-net
+
+networks:
+  autopay-test-net:
+    driver: bridge

@@ -93,7 +93,10 @@ async def provision_virtual_account(
             last_name=user.last_name,
             phone=user.phone_number,
         )
-        va_data = await provider.create_virtual_account(customer_code=customer_code)
+        va_data = await provider.create_virtual_account(
+            customer_code=customer_code,
+            account_name=f"{user.first_name} {user.last_name}".strip(),
+        )
     except PaymentError as exc:
         # Log the failure but expose a clean 502 to the user.
         write_audit(

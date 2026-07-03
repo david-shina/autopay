@@ -21,7 +21,7 @@ from app.services.payments.exceptions import (
     ProviderError,
     WebhookSignatureError,
 )
-from app.services.payments.paystack import PaystackProvider, get_payment_provider
+from app.services.payments.nomba import NombaProvider, get_payment_provider
 
 __all__ = [
     "AccountNameMismatch",
@@ -29,7 +29,7 @@ __all__ = [
     "InsufficientFunds",
     "InvalidAccount",
     "KYCRequired",
-    "PaystackProvider",
+    "NombaProvider",
     "PaymentError",
     "PaymentProvider",
     "ProviderError",

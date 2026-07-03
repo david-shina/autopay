@@ -51,12 +51,12 @@ open http://localhost:8000/docs
 | `LOG_LEVEL` | `INFO` | no | `DEBUG` / `INFO` / `WARNING` / `ERROR` |
 | `SECRET_KEY` | `change-me` | prod | Used by itsdangerous (session cookies). |
 | `DATABASE_URL` | `postgresql://postgres:...` | yes | SQLAlchemy URL. |
-| `PAYMENT_PROVIDER` | `nomba` | no | Selects the `PaymentProvider` implementation. `nomba` is currently the only option. |
+| `PAYMENT_PROVIDER` | `nomba` | yes | Selects the `PaymentProvider` implementation. `nomba` is currently the only option. |
 | `NOMBA_CLIENT_ID` | — | yes | OAuth client id, from the Nomba dashboard. |
 | `NOMBA_CLIENT_SECRET` | — | yes | OAuth client secret. Used to obtain access tokens, not sent on every request. |
 | `NOMBA_ACCOUNT_ID` | — | yes | UUID sent as the `accountId` header on every Nomba call. |
 | `NOMBA_WEBHOOK_SECRET` | — | yes | Signing key entered when registering the webhook URL in the Nomba dashboard. Verifies inbound webhook authenticity — a separate value from `NOMBA_CLIENT_SECRET`. |
-| `NOMBA_BASE_URL` | `https://api.nomba.com` | no | Override for sandbox/staging environments. |
+| `NOMBA_BASE_URL` | `https://api.nomba.com` | yes | Override for sandbox/staging environments. |
 | `BVN_ENCRYPTION_KEY` | — | yes | Fernet key. `make keygen` prints one. |
 | `JWT_SECRET_KEY` | — | yes | ≥32 chars. `make keygen` prints one. |
 | `JWT_ALGORITHM` | `HS256` | no | |

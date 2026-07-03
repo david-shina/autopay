@@ -68,7 +68,8 @@ def _new_reference(bill_id: int) -> str:
 
 
 def _ngn_to_kobo(amount: Decimal) -> int:
-    """₦ → kobo (integer). Paystack wants whole kobo only."""
+    """₦ → kobo (integer). This is AutoPay's internal amount unit;
+    each provider converts to whatever its own wire format needs."""
     return int((amount * Decimal(100)).quantize(Decimal("1")))
 
 
@@ -235,6 +236,9 @@ async def execute_payout(
             recipient_code=recipient_code,
             reference=reference,
             reason=f"AutoPay: {bill.vendor_name}",
+            account_number=bill.account_number,
+            bank_code=bill.bank_code,
+            account_name=resolved.account_name,
         )
     except InsufficientFunds as exc:
         # Provider says our MERCHANT balance is too low. Refund user.

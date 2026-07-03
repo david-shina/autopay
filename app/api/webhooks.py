@@ -1,13 +1,14 @@
-"""Paystack webhook handler.
+"""Nomba webhook handler.
 
-Mounted at /webhooks/paystack in `app.main`.
+Mounted at /webhooks/nomba in `app.main`.
 
-CRITICAL: Paystack POSTs the *raw* request body. We MUST verify
-the HMAC-SHA512 `x-paystack-signature` header BEFORE parsing JSON —
-this prevents attackers from forging charge.success events.
+CRITICAL: Nomba POSTs the *raw* request body. We MUST verify the
+`nomba-signature` HMAC-SHA256 (computed over specific header + body
+fields, not the raw body) BEFORE parsing JSON — this prevents
+attackers from forging payment_success events.
 
 REPLAY DEFENSE: We dedup on (provider, event_id) via the
-`webhook_events` table. Paystack retries the same event on a network
+`webhook_events` table. Providers retry the same event on a network
 blip; the second delivery is a 200 no-op with an audit breadcrumb.
 """
 from __future__ import annotations
@@ -41,22 +42,21 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["webhooks"])
 
 
-@router.post("/paystack", status_code=status.HTTP_200_OK)
-async def paystack_webhook(
+@router.post("/nomba", status_code=status.HTTP_200_OK)
+async def nomba_webhook(
     request: Request,
     session: Session = Depends(get_session),
     provider: PaymentProvider = Depends(get_payment_provider),
 ) -> dict:
-    """Receive + verify + dispatch a Paystack webhook event."""
+    """Receive + verify + dispatch a Nomba webhook event."""
     raw_body = await request.body()
-    signature = request.headers.get("x-paystack-signature") or ""
 
     try:
         event = await provider.parse_webhook(
-            raw_body=raw_body, signature_header=signature
+            raw_body=raw_body, headers=request.headers
         )
     except WebhookSignatureError as exc:
-        logger.warning("Paystack webhook with bad signature: %s", exc)
+        logger.warning("Nomba webhook with bad signature: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid signature",
@@ -90,11 +90,11 @@ async def paystack_webhook(
             },
         )
         session.commit()
-        logger.info("Paystack webhook replay rejected: %s", event.event_id)
+        logger.info("Nomba webhook replay rejected: %s", event.event_id)
         return {"received": True, "replay": True, "event": event.event_type}
 
     logger.info(
-        "Paystack webhook: event=%s reference=%s amount_kobo=%s",
+        "Nomba webhook: event=%s reference=%s amount_kobo=%s",
         event.event_type, event.provider_reference, event.amount_kobo,
     )
 

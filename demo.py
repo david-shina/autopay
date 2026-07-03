@@ -1,7 +1,7 @@
 import os, requests
 
 res = requests.post(
-    "https://api.nomba.com/v1/auth/token/issue",
+    "https://sandbox.nomba.com/v1/auth/token/issue",
     headers={
         "Content-Type": "application/json",
         "accountId": "f666ef9b-888e-4799-85ce-acb505b28023",

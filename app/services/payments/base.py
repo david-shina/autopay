@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Optional, Protocol, runtime_checkable
+from typing import Mapping, Optional, Protocol, runtime_checkable
 
 
 # ── DTOs ────────────────────────────────────────────────────────────
@@ -102,8 +102,16 @@ class PaymentProvider(Protocol):
         *,
         customer_code: str,
         preferred_bank: Optional[str] = None,
+        account_name: Optional[str] = None,
     ) -> VirtualAccountData:
-        """Issue a dedicated virtual account for `customer_code`."""
+        """Issue a dedicated virtual account for `customer_code`.
+
+        `account_name` is required by providers with no separate
+        customer object to draw a name from (e.g. Nomba, where the
+        account holder name is passed at creation time). Providers
+        that already know the name via `customer_code` (e.g. Paystack)
+        may ignore it.
+        """
         ...
 
     async def resolve_account(
@@ -122,7 +130,12 @@ class PaymentProvider(Protocol):
         bank_code: str,
         account_name: str,
     ) -> str:
-        """Create a transfer recipient; return provider's recipient_code."""
+        """Create a transfer recipient; return provider's recipient_code.
+
+        Providers with no server-side recipient concept (e.g. Nomba)
+        may treat this as a no-op and return a placeholder string --
+        `initiate_transfer` receives the account details directly too.
+        """
         ...
 
     async def initiate_transfer(
@@ -132,24 +145,40 @@ class PaymentProvider(Protocol):
         recipient_code: str,
         reference: str,
         reason: str,
+        account_number: Optional[str] = None,
+        bank_code: Optional[str] = None,
+        account_name: Optional[str] = None,
     ) -> TransferResult:
-        """Move `amount_kobo` (1 NGN = 100 kobo) from our balance to recipient."""
+        """Move `amount_kobo` (1 NGN = 100 kobo) from our balance to recipient.
+
+        `account_number`/`bank_code`/`account_name` are required by
+        providers that transfer directly to an account rather than a
+        pre-created recipient (e.g. Nomba). Providers that only need
+        `recipient_code` (e.g. Paystack) may ignore them.
+        """
         ...
 
     def verify_webhook_signature(
         self,
         *,
         raw_body: bytes,
-        signature_header: str,
+        headers: Mapping[str, str],
     ) -> bool:
-        """Return True iff `signature_header` is a valid HMAC of `raw_body`."""
+        """Return True iff `headers` prove `raw_body` is an authentic
+        webhook delivery.
+
+        Takes the full header mapping rather than one pre-extracted
+        header, since some providers (e.g. Nomba) sign over several
+        headers plus fields from the body itself, not a single
+        HMAC-of-raw-body header.
+        """
         ...
 
     async def parse_webhook(
         self,
         *,
         raw_body: bytes,
-        signature_header: str,
+        headers: Mapping[str, str],
     ) -> WebhookEvent:
         """Verify signature, then parse into a `WebhookEvent`. Raises on bad sig."""
         ...

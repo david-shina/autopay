@@ -82,6 +82,11 @@ class Settings(BaseSettings):
     def is_production(self) -> bool:
         return self.environment == "production"
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def nomba_sandbox(self) -> bool:
+        return "sandbox" in self.nomba_base_url
+
 
 @lru_cache
 def get_settings() -> Settings:

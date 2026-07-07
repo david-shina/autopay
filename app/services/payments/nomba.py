@@ -74,7 +74,7 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-NOMBA_BASE = "https://sandbox.nomba.com" if settings.nomba_sandbox else "https://api.nomba.com"
+NOMBA_BASE = "https://sandbox.nomba.com" 
 
 
 def _map_nomba_error(status_code: int, body: dict) -> PaymentError:

@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-David*2020*}@db:5432/${POSTGRES_DB:-nomba_gateway}
+      DATABASE_URL: postgresql://postgres:baEuTYTjvJzyhYZfILnVYvJGkRyiOoAa@postgres.railway.internal:5432/railway
     depends_on:
       db:
         condition: service_healthy
